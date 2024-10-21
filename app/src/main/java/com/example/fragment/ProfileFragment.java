@@ -39,7 +39,7 @@ public class ProfileFragment extends Fragment {
         ImageView imgCameraIcon = view.findViewById(R.id.imgCameraIcon);
         profileImage = view.findViewById(R.id.profile_image);
 
-        // Handle window insets for edge-to-edge
+        // Handle window insets for edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(tabLayout, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -78,25 +78,28 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    // Handle the result of the permission request
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == CAMERA_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openCamera();
+                openCamera(); // Permission granted, open camera
             } else {
                 Toast.makeText(getContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
+    // Handle the result of the camera activity
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_INTENT_CODE && resultCode == getActivity().RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            profileImage.setImageBitmap(imageBitmap); // Display the image in the ImageView
+            if (data != null && data.getExtras() != null) {
+                Bitmap imageBitmap = (Bitmap) data.getExtras().get("data");
+                profileImage.setImageBitmap(imageBitmap); // Display the captured image in the ImageView
+            }
         }
     }
 }

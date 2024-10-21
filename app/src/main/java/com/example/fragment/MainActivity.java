@@ -22,7 +22,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
-    private boolean isPortrait = true; // Track the current device orientation state
+
+    // To track the current orientation
+    private String currentOrientation = "Portrait";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,20 +82,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent event) {
         float x = event.values[0];
         float y = event.values[1];
+        float z = event.values[2];
 
-        // Check if the device is in portrait or landscape mode based on accelerometer values
+        String newOrientation = currentOrientation;
+
+        // Determine orientation based on accelerometer data
         if (Math.abs(y) > Math.abs(x)) {
-            // Portrait mode
-            if (!isPortrait) {
-                isPortrait = true;
-                Toast.makeText(this, "Device Orientation: Portrait", Toast.LENGTH_SHORT).show();
+            if (y > 0) {
+                newOrientation = "Portrait";
+            } else {
+                newOrientation = "Portrait Upside Down"; // Flip/Reverse portrait
             }
         } else {
-            // Landscape mode
-            if (isPortrait) {
-                isPortrait = false;
-                Toast.makeText(this, "Device Orientation: Landscape", Toast.LENGTH_SHORT).show();
+            if (x > 0) {
+                newOrientation = "Landscape Left";
+            } else {
+                newOrientation = "Landscape Right";
             }
+        }
+
+        // If the orientation has changed, notify the user with a Toast message
+        if (!newOrientation.equals(currentOrientation)) {
+            currentOrientation = newOrientation;
+            Toast.makeText(this, "Device Orientation: " + currentOrientation, Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -28,6 +28,12 @@ public class Register extends AppCompatActivity {
         btnRegister = findViewById(R.id.btn_up_register);
         btnLogin = findViewById(R.id.btn_back_login);
 
+        // Get the email passed from MainActivity and pre-fill it
+        String emailFromMain = getIntent().getStringExtra("email_key");
+        if (emailFromMain != null) {
+            editEmail.setText(emailFromMain);
+        }
+
         // Initialize SQLite helper
         databaseHelper = new DatabaseHelper(this);
         progressDialog = new ProgressDialog(Register.this);

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -29,6 +28,12 @@ public class Login extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         btnRegister = findViewById(R.id.btn_Register);
 
+        // Get the email passed from MainActivity and pre-fill it
+        String emailFromMain = getIntent().getStringExtra("email_key");
+        if (emailFromMain != null) {
+            editEmail.setText(emailFromMain);
+        }
+
         progressDialog = new ProgressDialog(Login.this);
         progressDialog.setTitle("Loading");
         progressDialog.setMessage("Please wait");
@@ -37,15 +42,6 @@ public class Login extends AppCompatActivity {
         // Initialize SQLite database helper and open writable database
         DatabaseHelper dbHelper = new DatabaseHelper(this);
         db = dbHelper.getWritableDatabase();
-
-        // Get the intent that started the activity
-        Intent intent = getIntent();
-        String receivedEmail = intent.getStringExtra("email_key");
-
-        // Set the email from intent if present
-        if (receivedEmail != null) {
-            editEmail.setText(receivedEmail);
-        }
 
         // Set login button click listener
         btnLogin.setOnClickListener(view -> {
@@ -57,12 +53,9 @@ public class Login extends AppCompatActivity {
         });
 
         // Set register button click listener
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Login.this, Register.class);
-                startActivity(intent);
-            }
+        btnRegister.setOnClickListener(v -> {
+            Intent intentRegister = new Intent(Login.this, Register.class);
+            startActivity(intentRegister);
         });
     }
 
@@ -70,28 +63,36 @@ public class Login extends AppCompatActivity {
     private void login(String email, String password) {
         progressDialog.show();
 
-        // Query the database to check if the email and password exist
-        Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ? AND password = ?",
-                new String[]{email, password});
+        try {
+            // Query the database to check if the email and password exist
+            Cursor cursor = db.rawQuery("SELECT * FROM users WHERE email = ? AND password = ?",
+                    new String[]{email, password});
 
-        if (cursor != null && cursor.moveToFirst()) {
-            // Login successful, navigate to ProfileFragment (or any activity you wish)
-            progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
-            reload();
-        } else {
-            // Login failed
-            progressDialog.dismiss();
-            Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_SHORT).show();
-        }
+            if (cursor != null && cursor.moveToFirst()) {
+                // Login successful, navigate to Navbar which will handle fragment transactions
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
+                navigateToNavbar();
+            } else {
+                // Login failed
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Invalid email or password", Toast.LENGTH_SHORT).show();
+            }
 
-        if (cursor != null) {
-            cursor.close();
+            if (cursor != null) {
+                cursor.close();
+            }
+        } catch (Exception e) {
+            progressDialog.dismiss();
+            Toast.makeText(getApplicationContext(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
-    private void reload() {
-        // Redirect to another activity after successful login
-        startActivity(new Intent(getApplicationContext(), ProfileFragment.class));
+    private void navigateToNavbar() {
+        // Redirect to Navbar after successful login
+        Intent intent = new Intent(getApplicationContext(), Navbar.class);
+        startActivity(intent);
+        finish(); // Close login activity
     }
 }

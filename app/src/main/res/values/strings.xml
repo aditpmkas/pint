@@ -1,0 +1,18 @@
+<resources>
+    <string name="default_web_client_id">YOUR_CLIENT_ID_HERE</string>
+
+    <string name="app_name">fix</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="page_2">Page 2</string>
+    <string name="page_3" />
+    <string name="page_1">Page 1</string>
+    <string name="search">Search</string>
+    <string name="ideas_for_creators">Ideas for Creators:</string>
+    <string name="page_image">Page Image</string>
+    <string name="idea_for_creators">Idea for Creators:</string>
+    <string name="the_beautiful_rose_flower">The Beautiful Rose Flower</string>
+    <string name="the_beautiful_rose_flower1">The Beautiful Rose Flower</string>
+</resources>
